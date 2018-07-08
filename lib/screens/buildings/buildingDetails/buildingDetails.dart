@@ -1,43 +1,44 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:rnt_proj/models/house.dart';
+import 'package:rnt_proj/models/building.dart';
 import 'package:rnt_proj/app-const.dart';
 
-class HouseDetailState extends StatefulWidget{
-  final House house;
-  HouseDetailState(this.house);
+class BuildingDetailState extends StatefulWidget{
+  final Building building;
+  BuildingDetailState(this.building);
   @override
   State<StatefulWidget> createState() {
-    return new HouseDetailPage(house);
+    return new BuildingDetailPage(building);
   }
 }
 
-class HouseDetailPage extends State<HouseDetailState>{
-  final House house;
-  HouseDetailPage(this.house);
-  final houseObj = new List<House>();
+class BuildingDetailPage extends State<BuildingDetailState>{
+  final Building building;
+  BuildingDetailPage(this.building);
+  final buildingObj = new List<Building>();
   var _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _fetchHouse();
+    _fetchBuilding();
   }
 
-  _fetchHouse() async {
-    final url = serverPath+'houses/'+house.id.toString();
+  _fetchBuilding() async {
+    final url = serverPath+'buildings/'+building.id.toString();
     print('Fetching '+url);
     final response = await http.get(url);
     print(response.body);
-    final houseJson = json.decode(response.body);
-    houseJson.forEach((houseDict){
-      final spficHouse = new House(
-        houseDict['id'],
-        houseDict['house_name'],
-        houseDict['building']['name']
+    final buildingJson = json.decode(response.body);
+    buildingJson.forEach((buildingDict){
+      final spficBuilding = new Building(
+        buildingDict['id'],
+        buildingDict['name'],
+        buildingDict['units'],
+        buildingDict['address']
       );
-      houseObj.add(spficHouse);
+      buildingObj.add(spficBuilding);
     });
 
     setState((){
@@ -49,15 +50,15 @@ class HouseDetailPage extends State<HouseDetailState>{
   Widget build(BuildContext context){
     return new Scaffold(
       appBar: new AppBar(
-        title: new Text(house.houseName),
+        title: new Text(building.buildingName),
       ),
       body: new Center(
           child
               : _isLoading ? new CircularProgressIndicator()
               : new ListView.builder(
-            itemCount: houseObj.length,
+            itemCount: buildingObj.length,
             itemBuilder: (context, i){
-              final houseDisplay = houseObj[i];
+              final buildingDisplay = buildingObj[i];
               return  new Column(
                 children: <Widget>[
                   new Container(
@@ -69,9 +70,7 @@ class HouseDetailPage extends State<HouseDetailState>{
                           child: new Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
-                              new Text(house.houseName),
-                              new Container(height: 4.0),
-                              new Text(house.building),
+                              new Text(buildingDisplay.buildingName),
                               new Container(height: 4.0),
                             ],
                           ),

@@ -1,12 +1,12 @@
-class Payments {
+class Payment {
   int id;
-  String tenant;
+  final tenant;
   int amountReceived;
   String datePaid;
   String monthPaidFor;
   String comments;
 
-  Payments(
+  Payment(
       this.id,
       this.tenant,
       this.amountReceived,
@@ -17,5 +17,9 @@ class Payments {
 }
 
 class NewPayment{
-  String houseName;
+  int tenant;
+  int amountReceived;
+  String datePaid;
+  String monthPaidFor;
+  String comments;
 }

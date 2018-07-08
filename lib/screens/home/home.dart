@@ -88,6 +88,26 @@ class HomeScreen extends StatelessWidget{
                 ],
               ),
             ),
+            new Card(
+              child: new RaisedButton(
+                color: Colors.white,
+                child: new Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    const Icon(
+                      Icons.home,
+                      size: 100.0,
+                      color: Colors.grey,
+                    ),
+                    new Container(height: 10.0),
+                    const Text('Buildings'),
+                  ],
+                ),
+                onPressed: () {
+                  Navigator.pushNamed(context, '/buildings');
+                },
+              ),
+            ),
           ],
         ),
       ),

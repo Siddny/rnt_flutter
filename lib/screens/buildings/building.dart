@@ -1,42 +1,43 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:rnt_proj/models/house.dart';
-import 'package:rnt_proj/screens/houses/houseDetails/houseDetails.dart';
-import 'package:rnt_proj/screens/houses/new-house.dart';
+import 'package:rnt_proj/models/building.dart';
+import 'package:rnt_proj/screens/buildings/buildingDetails/buildingDetails.dart';
+import 'package:rnt_proj/screens/buildings/new-building.dart';
 import 'package:rnt_proj/app-const.dart';
 
-class HouseState extends StatefulWidget {
+class BuildingState extends StatefulWidget {
   @override
   State<StatefulWidget> createState(){
-    return new HouseScreen();
+    return new BuildingScreen();
   }
 }
 
-class HouseScreen extends State<HouseState> {
+class BuildingScreen extends State<BuildingState> {
   var _isLoading = true;
-  final houses = new List<House>();
+  final buildings = new List<Building>();
 
   @override
   void initState() {
     super.initState();
-    _fetchHouses();
+    _fetchBuildings();
   }
 
-  _fetchHouses() async {
-    houses.clear();
-    final url = serverPath+'houses/';
+  _fetchBuildings() async {
+    buildings.clear();
+    final url = serverPath+'buildings/';
     final res = await http.get(url);
     if (res.statusCode == 200 ){
       print(res.body);
-      final housesJson = json.decode(res.body);
-      housesJson.forEach((item) {
-        final house = new House(
+      final buildingsJson = json.decode(res.body);
+      buildingsJson.forEach((item) {
+        final building = new Building(
             item['id'],
-            item['house_name'],
-            item['building']['name'],
+            item['name'],
+            item['units'],
+            item['address'],
         );
-        houses.add(house);
+        buildings.add(building);
       });
       setState(() {
         _isLoading = false;
@@ -48,15 +49,15 @@ class HouseScreen extends State<HouseState> {
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: new AppBar(
-        title: new Text("Houses"),
+        title: new Text("Buildings"),
       ),
       body: new Center(
           child
               : _isLoading ? new CircularProgressIndicator()
               : new ListView.builder(
-              itemCount: houses.length,
+              itemCount: buildings.length,
               itemBuilder: (context, i){
-                final item = houses[i];
+                final item = buildings[i];
                 return new Column(
                   children: <Widget>[
                     new Container(
@@ -66,25 +67,27 @@ class HouseScreen extends State<HouseState> {
                         children: <Widget>[
                           new Flexible(
                               child: new SizedBox(
-                                height:50.0,
+                                height:60.0,
                                 child: new RaisedButton(
-                                  color: Colors.white,     
-                                  child: new Column(
+                                  color: Colors.white,     child: new Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: <Widget>[
-                                      new Text(item.houseName,
-                                          style: new TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
-                                      new Text(item.building,
-                                          style: new TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
-                                      new Container(height: 4.0),
-                                    ],
+                                  children: <Widget>[
+                                    new Container(height: 4.0),
+                                    new Text('Name: '+item.buildingName,
+                                        style: new TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
+                                    new Text('Units: '+item.units.toString(),
+                                        style: new TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
+                                    new Text('Address: '+item.address,
+                                        style: new TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
+                                    new Container(height: 4.0),
+                                  ],
                                 ),
                                   onPressed: () {
                                     Navigator.push(
                                         context,
                                         new MaterialPageRoute(
                                             builder: (context) =>
-                                            new HouseDetailState(item)
+                                            new BuildingDetailState(item)
                                         )
                                     );
                                   },
@@ -101,13 +104,13 @@ class HouseScreen extends State<HouseState> {
       ),
       floatingActionButton: new FloatingActionButton(
         child: new Icon(Icons.add),
-        tooltip: 'Add new house',
+        tooltip: 'Add new building',
         onPressed: (){
           Navigator.push(
               context,
               new MaterialPageRoute(
                   builder: (context) =>
-                  new NewHouseState()
+                  new NewBuildingState()
               )
           );
         },

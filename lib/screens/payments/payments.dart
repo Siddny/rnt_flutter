@@ -3,6 +3,8 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:rnt_proj/models/payment.dart';
 import 'package:rnt_proj/app-const.dart';
+import 'package:rnt_proj/models/tenant.dart';
+import 'package:rnt_proj/screens/payments/new-payment.dart';
 
 class PaymentState extends StatefulWidget {
   @override
@@ -13,12 +15,12 @@ class PaymentState extends StatefulWidget {
 
 class PaymentScreen extends State<PaymentState> {
   var _isLoading = true;
-  final payments = new List<Payments>();
+  final payments = new List<Payment>();
 
   @override
   void initState() {
     super.initState();
-//    _fetchPayments();
+    _fetchPayments();
   }
 
   _fetchPayments() async {
@@ -29,9 +31,17 @@ class PaymentScreen extends State<PaymentState> {
       print(res.body);
       final paymentsJson = json.decode(res.body);
       paymentsJson.forEach((item) {
-        final payment = new Payments(
+        final payment = new Payment(
           item['id'],
-          item['tenant'],
+          item['tenant'] = new Tenant(
+              item['tenant']['id'],
+              item['tenant']['first_name'],
+              item['tenant']['last_name'],
+              item['tenant']['id_number'],
+              item['tenant']['mobile'],
+              item['tenant']['amount'],
+              item['tenant']['date_joined'],
+          ), 
           item['amount_received'],
           item['date_paid'],
           item['month_paid_for'],
@@ -52,72 +62,66 @@ class PaymentScreen extends State<PaymentState> {
         title: new Text("Payments"),
       ),
       body: new Center(
-        child: Text('jkhkhk'),
-//          child
-//              : _isLoading ? new CircularProgressIndicator()
-//              : new ListView.builder(
-//              itemCount: payments.length,
-//              itemBuilder: (context, i){
-//                final item = payments[i];
-//                return new Column(
-//                  children: <Widget>[
-//                    new Container(
-//                      padding: new EdgeInsets.all(12.0),
-//                      child: new Row(
-//                        crossAxisAlignment: CrossAxisAlignment.start,
-//                        children: <Widget>[
-//                          new Flexible(
-//                              child: new SizedBox(
-//                                height:50.0,
-//                                child: new RaisedButton(
-//                                  color: Colors.white,     child: new Column(
-//                                  crossAxisAlignment: CrossAxisAlignment.start,
-//                                  children: <Widget>[
-//                                    new Text(item.amountReceived.toString(),
-//                                        style: new TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
-//                                    new Container(height: 4.0),
-//                                    new Text(item.comments,
-//                                        style: new TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
-//                                    new Container(height: 4.0),
-//                                    new Text(item.datePaid,
-//                                        style: new TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
-//                                    new Container(height: 4.0),
-//                                    new Text(item.monthPaidFor,
-//                                        style: new TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
-//                                    new Container(height: 4.0),
-//                                  ],
-//                                ),
-//                                  onPressed: () {
-////                                    Navigator.push(
-////                                        context,
-////                                        new MaterialPageRoute(
-////                                            builder: (context) =>
-////                                            new PaymentDetailState(item)
-////                                        )
-////                                    );
-//                                  },
-//                                ),
-//                              )
-//                          )
-//                        ],
-//                      ),
-//                    ),
-//                  ],
-//                );
-//              }
-//          )
+          child
+              : _isLoading ? new CircularProgressIndicator()
+              : new ListView.builder(
+              itemCount: payments.length,
+              itemBuilder: (context, i){
+                final item = payments[i];
+                return new Column(
+                  children: <Widget>[
+                    new Container(
+                      padding: new EdgeInsets.all(12.0),
+                      child: new Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          new Flexible(
+                              child: new SizedBox(
+                                height:60.0,
+                                child: new RaisedButton(
+                                  color: Colors.white,     
+                                  child: new Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: <Widget>[
+                                      new Container(height: 4.0),
+                                      new Text(item.amountReceived.toString(),
+                                          style: new TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
+                                      new Text(item.monthPaidFor,
+                                          style: new TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
+                                      new Container(height: 4.0),
+                                    ],
+                                ),
+                                  onPressed: () {
+                                    // Navigator.push(
+                                    //     context,
+                                    //     new MaterialPageRoute(
+                                    //         builder: (context) =>
+                                    //         new PaymentDetailState(item)
+                                    //     )
+                                    // );
+                                  },
+                                ),
+                              )
+                          )
+                        ],
+                      ),
+                    ),
+                  ],
+                );
+              }
+          )
       ),
       floatingActionButton: new FloatingActionButton(
         child: new Icon(Icons.add),
         tooltip: 'Add new payment',
         onPressed: (){
-//          Navigator.push(
-//              context,
-//              new MaterialPageRoute(
-//                  builder: (context) =>
-//                  new NewPaymentsState()
-//              )
-//          );
+          Navigator.push(
+              context,
+              new MaterialPageRoute(
+                  builder: (context) =>
+                  new NewPaymentState()
+              )
+          );
         },
       ),
     );
