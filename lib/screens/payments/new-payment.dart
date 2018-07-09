@@ -13,11 +13,15 @@ class NewPaymentState extends StatefulWidget{
 
 class User {
   const User(this.name);
-
   final String name;
 }
 
+enum Answer{YES, NO, MAYBE}
+
 class NewPaymentScreen extends State<NewPaymentState>{
+
+  String _answer = '';
+
   NewPaymentScreen();
   final newPaymentObj = new List<NewPayment>();
   // var _isLoading = true;
@@ -25,6 +29,51 @@ class NewPaymentScreen extends State<NewPaymentState>{
   @override
   void initState() {
     super.initState();
+  }
+
+  void setAnswer(String value){
+    setState(() {
+      //TODO act on the answer
+      _answer = value;
+    });
+  }
+
+  Future<Null> _askuser() async{
+    switch (
+      await showDialog(
+        context: context,
+        child: new SimpleDialog(
+          title: new Text('Do you like ? '),
+          children: <Widget>[
+            new SimpleDialogOption(
+              onPressed: (){
+                Navigator.pop(context, Answer.NO);},
+                child: const Text('Yess!!!'),
+            ),
+            new SimpleDialogOption(
+              onPressed: (){
+                Navigator.pop(context, Answer.YES);},
+                child: const Text('NO!!!'),
+            ),
+            new SimpleDialogOption(
+              onPressed: (){
+                Navigator.pop(context, Answer.MAYBE);},
+                child: const Text('Maybe!!!'),
+            ),
+          ],
+        )
+      )) {
+      case Answer.YES:
+        setAnswer('yes');
+        break;
+      case Answer.NO:
+        setAnswer('no');
+        break;
+      case Answer.MAYBE:
+        setAnswer('maybe');
+        break;
+      default:
+    }
   }
 
   User selectedUser;
@@ -210,7 +259,13 @@ class NewPaymentScreen extends State<NewPaymentState>{
                   );
                 }).toList(),
               ),
-
+              new Text('You answered ${_answer}'),
+              new RaisedButton(
+                child: new Text('Click Me'),
+                onPressed: (){
+                  _askuser();
+                },
+              ),
               SizedBox(height: 14.0),
               register
             ],
